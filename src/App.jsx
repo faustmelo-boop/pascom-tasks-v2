@@ -1,22 +1,30 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from "./contexto/AuthContext";
-import { FirestoreProvider } from "./contexto/FirestoreContext";
 
-import Sidebar from "./componentes/Sidebar";
-import Topbar from "./componentes/Topbar";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import { FirestoreProvider } from "./context/FirestoreContext";
 
-import Feed from "./paginas/Feed";
-import Workflow from "./paginas/Workflow";
-import Schedule from "./paginas/Schedule";
-import Team from "./paginas/Team";
-import Profile from "./paginas/Profile";
-import AuthPage from "./paginas/Auth";
+import Sidebar from "./components/Sidebar";
+import Topbar from "./components/Topbar";
 
-// Componente que protege rotas privadas
+import Feed from "./pages/Feed";
+import Workflow from "./pages/Workflow";
+import Schedule from "./pages/Schedule";
+import Team from "./pages/Team";
+import Profile from "./pages/Profile";
+import AuthPage from "./pages/Auth";
+
+// Protect private routes
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth();
 
-  if (loading) return <div className="p-6 text-center">Carregando...</div>;
+  if (loading) {
+    return (
+      <div className="p-6 text-center text-slate-600">
+        Loading...
+      </div>
+    );
+  }
+
   if (!user) return <Navigate to="/auth" />;
 
   return children;
@@ -29,10 +37,10 @@ export default function App() {
         <BrowserRouter>
           <div className="flex h-screen overflow-hidden">
 
-            {/* Sidebar fixa */}
+            {/* Sidebar */}
             <Sidebar />
 
-            {/* Conteúdo principal */}
+            {/* Main content */}
             <div className="flex flex-col flex-1">
               <Topbar />
 
@@ -46,6 +54,7 @@ export default function App() {
                       </PrivateRoute>
                     }
                   />
+
                   <Route
                     path="/workflow"
                     element={
@@ -54,6 +63,7 @@ export default function App() {
                       </PrivateRoute>
                     }
                   />
+
                   <Route
                     path="/schedule"
                     element={
@@ -62,6 +72,7 @@ export default function App() {
                       </PrivateRoute>
                     }
                   />
+
                   <Route
                     path="/team"
                     element={
@@ -70,6 +81,7 @@ export default function App() {
                       </PrivateRoute>
                     }
                   />
+
                   <Route
                     path="/profile"
                     element={
@@ -79,8 +91,11 @@ export default function App() {
                     }
                   />
 
-                  {/* Página de login */}
+                  {/* Public route */}
                   <Route path="/auth" element={<AuthPage />} />
+
+                  {/* Redirect any unknown route */}
+                  <Route path="*" element={<Navigate to="/" />} />
                 </Routes>
               </div>
             </div>
@@ -91,3 +106,4 @@ export default function App() {
     </AuthProvider>
   );
 }
+
